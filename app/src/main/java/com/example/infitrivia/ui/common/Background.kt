@@ -33,7 +33,7 @@ fun GradientBackground(
     // Animate the radius of the ripple with custom easing
     val rippleSize by infiniteTransition.animateFloat(
         initialValue = 1750f,
-        targetValue = 1850f,
+        targetValue = 1950f,
         animationSpec = infiniteRepeatable(
             animation = tween(
                 durationMillis = 20000,
