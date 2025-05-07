@@ -62,7 +62,7 @@ fun InfitriviaHomeScreen(
                 onValueChange = { topicText = it },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
+                    .padding(horizontal = 50.dp)
             )
         }
         
@@ -80,14 +80,18 @@ fun InfitriviaHomeScreen(
                         onStartTrivia(topicText)
                     }
                 },
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(30.dp),
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFFF8C00)
+                ),
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
                     .padding(horizontal = 16.dp)
             ) {
                 Text(
                     text = "Start",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.White,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
