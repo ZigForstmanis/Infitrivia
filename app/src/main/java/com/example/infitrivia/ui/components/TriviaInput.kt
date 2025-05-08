@@ -12,9 +12,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -34,20 +32,17 @@ fun TriviaTopicInput(
     Box(
         modifier = modifier
     ) {
-        // Background with blur effect
+        // Background with semi-transparent effect
         Box(
             modifier = Modifier
                 .matchParentSize()
                 .background(
-                    Color.Black.copy(alpha = 0.4f),
+                    Color.Black.copy(alpha = 0.2f),
                     shape = RoundedCornerShape(10.dp)
                 )
-                .graphicsLayer {
-                    renderEffect = BlurEffect(1f, 1f)
-                }
         )
-        
-        // Text field on top (without blur effect)
+
+        // Text field on top
         TextField(
             value = value,
             onValueChange = onValueChange,
@@ -55,7 +50,6 @@ fun TriviaTopicInput(
             modifier = Modifier
                 .fillMaxWidth(),
             singleLine = true,
-            shape = RoundedCornerShape(10.dp),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
                 onDone = { focusManager.clearFocus() }
@@ -67,10 +61,10 @@ fun TriviaTopicInput(
                 disabledContainerColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White,
-                focusedLabelColor = Color.White,
-                unfocusedLabelColor = Color.White.copy(alpha = 0.7f)
+                focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                focusedLabelColor = MaterialTheme.colorScheme.onBackground,
+                unfocusedLabelColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
             )
         )
     }

@@ -1,4 +1,4 @@
-package com.example.infitrivia
+package com.example.infitrivia.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
