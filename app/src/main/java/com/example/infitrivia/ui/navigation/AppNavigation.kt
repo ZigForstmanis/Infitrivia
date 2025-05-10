@@ -68,7 +68,10 @@ fun TriviaApp() {
                 SimpleBackground(
                     modifier = Modifier.padding(innerPadding)
                 ) {
-                    GameScreen(topic = topic)
+                    GameScreen(
+                        topic = topic,
+                        navController = navController
+                    )
                 }
             }
         }

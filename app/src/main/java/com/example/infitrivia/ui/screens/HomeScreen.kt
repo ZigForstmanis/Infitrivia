@@ -34,8 +34,9 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun InfitriviaHomeScreen(
-    onStartTrivia: (String) -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onStartTrivia: (String) -> Unit = {}
+
 ) {
     var topicText by rememberSaveable { mutableStateOf("") }
     var isValidating by remember { mutableStateOf(false) }
