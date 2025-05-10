@@ -12,6 +12,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
@@ -27,28 +28,22 @@ fun TriviaTopicInput(
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
-    
+
     // Create a stacked layout with Box
     Box(
         modifier = modifier
     ) {
-        // Background with semi-transparent effect
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .background(
-                    Color.Black.copy(alpha = 0.2f),
-                    shape = RoundedCornerShape(10.dp)
-                )
-        )
-
         // Text field on top
         TextField(
             value = value,
             onValueChange = onValueChange,
             label = { Text("Enter trivia topic") },
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .background(
+                    Color.Black.copy(alpha = 0.2f),
+                    shape = RoundedCornerShape(10.dp)
+                ),
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
