@@ -195,11 +195,11 @@ fun GameScreen(
                                     color = TealAccent,
                                     modifier = Modifier.size(24.dp)
                                 )
-                                
-                                if (showAnswer) {
+                                  if (showAnswer) {
                                     Text(
                                         text = "Generating next question...",
                                         style = MaterialTheme.typography.bodySmall,
+                                        textAlign = TextAlign.Start, // Changed to left justified
                                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                                         modifier = Modifier.padding(top = 8.dp)
                                     )
@@ -220,19 +220,18 @@ fun GameScreen(
 }
 
 @Composable
-private fun LoadingState(isFirstLoad: Boolean = true) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+private fun LoadingState(isFirstLoad: Boolean = true) {    Column(
+        horizontalAlignment = Alignment.Start, // Changed from CenterHorizontally to Start
         modifier = Modifier.padding(16.dp)
     ) {
         CircularProgressIndicator(
             color = TealAccent,
             modifier = Modifier.size(48.dp)
         )
-        Text(
+            Text(
             text = if (isFirstLoad) "Generating trivia questions..." else "Creating next question...",
             style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Start, // Changed to left justified
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(top = 16.dp)
         )
@@ -241,7 +240,7 @@ private fun LoadingState(isFirstLoad: Boolean = true) {
             Text(
                 text = "This may take a few moments",
                 style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.Start, // Changed to left justified
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                 modifier = Modifier.padding(top = 8.dp)
             )
@@ -255,9 +254,8 @@ private fun ErrorState(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     navController: NavController = rememberNavController()
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+) {    Column(
+        horizontalAlignment = Alignment.Start, // Changed from CenterHorizontally to Start
         verticalArrangement = Arrangement.Center,
         modifier = modifier
             .padding(24.dp)
@@ -270,11 +268,10 @@ private fun ErrorState(
             color = MaterialTheme.colorScheme.error,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        
-        Text(
+          Text(
             text = errorMessage,
             style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Start, // Changed to left justified
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 24.dp)
         )

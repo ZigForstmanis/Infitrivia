@@ -29,12 +29,11 @@ fun FactoidCard(
             .clip(RoundedCornerShape(12.dp))
             .background(DarkerBlue.copy(alpha = 0.8f))
             .padding(16.dp)
-    ) {
-        Text(
+    ) {        Text(
             text = "Did you know? $factoid",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground,
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Start, // Changed to left justified
             modifier = Modifier.fillMaxWidth()
         )
     }

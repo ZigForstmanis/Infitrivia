@@ -34,26 +34,18 @@ fun TriviaQuestionCard(
             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
         ),
         elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Column(
+    ) {        Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally        ) {
-            Text(
-                text = if (totalQuestions > 0) 
-                    "Question $questionNumber of $totalQuestions"
-                else 
-                    "Question #$questionNumber - Endless Mode",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                textAlign = TextAlign.Center
-            )
+            horizontalAlignment = Alignment.Start
+        ) {
+            // Question number header removed as requested
             
             Text(
                 text = question.question,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium, // Decreased font size from titleLarge to titleMedium
                 fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.Start, // Changed to left justified
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(vertical = 8.dp)
             )

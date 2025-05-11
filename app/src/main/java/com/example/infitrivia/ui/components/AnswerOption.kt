@@ -75,11 +75,10 @@ fun AnswerOption(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         border = BorderStroke(1.dp, borderColor)
-    ) {
-        Text(
+    ) {        Text(
             text = "${optionLetters[optionIndex]}: $answerText",
             style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Start, // Changed to left justified
             color = textColor,
             modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp)
         )
