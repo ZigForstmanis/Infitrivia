@@ -38,10 +38,12 @@ fun TriviaQuestionCard(
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+            horizontalAlignment = Alignment.CenterHorizontally        ) {
             Text(
-                text = "Question ${questionNumber + 1} of $totalQuestions",
+                text = if (totalQuestions > 0) 
+                    "Question $questionNumber of $totalQuestions"
+                else 
+                    "Question #$questionNumber - Endless Mode",
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                 textAlign = TextAlign.Center

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -24,6 +25,7 @@ import com.example.infitrivia.ui.theme.OrangeButton
  */
 @Composable
 fun QuestionScreen(
+    modifier: Modifier = Modifier,
     question: TriviaQuestion,
     questionNumber: Int,
     totalQuestions: Int,
@@ -31,7 +33,8 @@ fun QuestionScreen(
     showAnswer: Boolean,
     onAnswerSelected: (Int) -> Unit,
     onNextQuestion: () -> Unit,
-    modifier: Modifier = Modifier
+    isLoadingNextQuestion: Boolean = false
+
 ) {
     val scrollState = rememberScrollState()
     
@@ -42,8 +45,7 @@ fun QuestionScreen(
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Question card
+    ) {        // Question card
         TriviaQuestionCard(
             question = question,
             questionNumber = questionNumber,
@@ -81,19 +83,27 @@ fun QuestionScreen(
             )
             
             Spacer(modifier = Modifier.height(8.dp))
-            
-            Button(
+              Button(
                 onClick = onNextQuestion,
+                enabled = !isLoadingNextQuestion,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = OrangeButton
                 ),
                 modifier = Modifier.padding(vertical = 8.dp)
             ) {
-                Text(
-                    text = "Next Question",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
+                if (isLoadingNextQuestion) {
+                    // Show loading indicator in the button
+                    androidx.compose.material3.CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                } else {
+                    Text(
+                        text = "Next Question",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
             }
         }
         

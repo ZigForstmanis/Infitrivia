@@ -1,5 +1,6 @@
 package com.example.infitrivia.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -25,10 +27,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.infitrivia.model.TriviaQuiz
 import com.example.infitrivia.ui.components.QuestionScreen
-import com.example.infitrivia.ui.components.ResultsScreen
 import com.example.infitrivia.ui.navigation.TriviaDestinations
+import com.example.infitrivia.ui.theme.OrangeButton
 import com.example.infitrivia.ui.theme.TealAccent
 import com.example.infitrivia.ui.viewmodel.GameUiState
 import com.example.infitrivia.ui.viewmodel.GameViewModel
@@ -52,11 +53,11 @@ fun GameScreen(
     
     // Observe state
     val uiState by viewModel.uiState.collectAsState()
-    val currentQuestionIndex by viewModel.currentQuestionIndex.collectAsState()
+    val questionsAnswered by viewModel.questionsAnswered.collectAsState()
     val selectedAnswerIndex by viewModel.selectedAnswerIndex.collectAsState()
     val showAnswer by viewModel.showAnswer.collectAsState()
     val score by viewModel.score.collectAsState()
-    val gameComplete by viewModel.gameComplete.collectAsState()
+    val isLoadingNextQuestion by viewModel.isLoadingNextQuestion.collectAsState()
     
     Column(
         modifier = modifier
@@ -64,7 +65,7 @@ fun GameScreen(
             .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Header with topic and score (only if quiz is loaded)
+        // Header with topic and score (only if question is loaded)
         if (uiState is GameUiState.Success) {
             Row(
                 modifier = Modifier
@@ -80,14 +81,26 @@ fun GameScreen(
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.weight(1f)
                 )
-                
-                // Score
-                Text(
-                    text = "Score: $score",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = TealAccent,
-                    fontWeight = FontWeight.Bold
-                )
+                  // Score with percentage for endless mode
+                Column(
+                    horizontalAlignment = Alignment.End
+                ) {
+                    Text(
+                        text = "Score: $score / $questionsAnswered",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TealAccent,
+                        fontWeight = FontWeight.Bold
+                    )
+                      if (questionsAnswered > 0) {
+                        val percentage = (score * 100 / questionsAnswered.coerceAtLeast(1))
+                        Text(
+                            text = "$percentage%",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = if (percentage >= 70) TealAccent else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+                        )
+                    }
+                }
             }
             
             HorizontalDivider(
@@ -121,46 +134,84 @@ fun GameScreen(
                 .fillMaxSize()
                 .padding(top = 8.dp),
             contentAlignment = Alignment.Center
-        ) {
-            when (uiState) {
+        ) {            when (uiState) {
                 is GameUiState.Loading -> {
-                    LoadingState()
+                    LoadingState(isFirstLoad = questionsAnswered == 0)
                 }
                 is GameUiState.Success -> {
-                    val quiz = (uiState as GameUiState.Success).quiz
+                    val gameState = uiState as GameUiState.Success
+                    val currentQuestion = gameState.currentQuestion
                     
-                    if (gameComplete) {
-                        // Show results screen
-                        ResultsScreen(
-                            topic = quiz.topic,
-                            score = score,
-                            totalQuestions = quiz.questions.size,
-                            onPlayAgain = { viewModel.restartQuiz() },
-                            onNewTopic = { 
-                                // Navigate back to home screen
-                                navController.navigate(TriviaDestinations.HOME_ROUTE) {
-                                    // Clear the back stack so user can't go back to this game
-                                    popUpTo(TriviaDestinations.HOME_ROUTE) { inclusive = true }
-                                }
-                            }
-                        )
-                    } else {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(16.dp)
+                    ) {
                         // Show current question
                         QuestionScreen(
-                            question = quiz.questions[currentQuestionIndex],
-                            questionNumber = currentQuestionIndex,
-                            totalQuestions = quiz.questions.size,
+                            question = currentQuestion,
+                            questionNumber = questionsAnswered + 1, // Add 1 for human-readable question number
+                            totalQuestions = 0, // We don't have a total since it's indefinite
                             selectedAnswerIndex = selectedAnswerIndex,
                             showAnswer = showAnswer,
                             onAnswerSelected = { viewModel.selectAnswer(it) },
-                            onNextQuestion = { viewModel.nextQuestion() }
+                            onNextQuestion = { 
+                                if (!isLoadingNextQuestion) {
+                                    viewModel.nextQuestion() 
+                                }
+                            },
+                            isLoadingNextQuestion = isLoadingNextQuestion && showAnswer
                         )
+                        
+                        // Home button
+                        Button(
+                            onClick = { 
+                                navController.navigate(TriviaDestinations.HOME_ROUTE) {
+                                    popUpTo(TriviaDestinations.HOME_ROUTE) { inclusive = true }
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = OrangeButton
+                            ),
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = "End Game & Choose New Topic",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
                     }
-                }
-                is GameUiState.Error -> {
+                      // Show loading indicator when generating next question
+                    if (isLoadingNextQuestion) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.BottomCenter
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            ) {
+                                CircularProgressIndicator(
+                                    color = TealAccent,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                
+                                if (showAnswer) {
+                                    Text(
+                                        text = "Generating next question...",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                                        modifier = Modifier.padding(top = 8.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }                is GameUiState.Error -> {
                     ErrorState(
                         errorMessage = (uiState as GameUiState.Error).message,
-                        onRetry = { viewModel.retryLoading(topic) }
+                        onRetry = { viewModel.retryLoading(topic) },
+                        navController = navController
                     )
                 }
             }
@@ -169,7 +220,7 @@ fun GameScreen(
 }
 
 @Composable
-private fun LoadingState() {
+private fun LoadingState(isFirstLoad: Boolean = true) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(16.dp)
@@ -179,36 +230,81 @@ private fun LoadingState() {
             modifier = Modifier.size(48.dp)
         )
         Text(
-            text = "Generating trivia questions...",
+            text = if (isFirstLoad) "Generating trivia questions..." else "Creating next question...",
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(top = 16.dp)
         )
+        
+        if (isFirstLoad) {
+            Text(
+                text = "This may take a few moments",
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
     }
 }
 
 @Composable
 private fun ErrorState(
     errorMessage: String,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
+    navController: NavController = rememberNavController()
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(16.dp)
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier
+            .padding(24.dp)
+            .fillMaxWidth()
     ) {
         Text(
-            text = "Error loading quiz: $errorMessage",
+            text = "Sorry!",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        
+        Text(
+            text = errorMessage,
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.error,
-            modifier = Modifier.padding(bottom = 16.dp)
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(bottom = 24.dp)
         )
-        Button(
-            onClick = onRetry,
-            modifier = Modifier.padding(top = 8.dp)
+        
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(text = "Retry")
+            Button(
+                onClick = onRetry,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = TealAccent
+                ),
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Text(text = "Try Again")
+            }
+            
+            Button(
+                onClick = { 
+                    navController.navigate(TriviaDestinations.HOME_ROUTE) {
+                        popUpTo(TriviaDestinations.HOME_ROUTE) { inclusive = true }
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = OrangeButton
+                ),
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Text(text = "New Topic")
+            }
         }
     }
 }
